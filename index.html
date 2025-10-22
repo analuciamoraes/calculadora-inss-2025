@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de INSS — 2025</title>
+<style>
+  :root {
+    --roxo: #6a0dad;
+    --roxo-pastel: #f4f1fb;
+    --roxo-claro: #bba3e3;
+    --texto: #333;
+    --fundo: #f4f1fb;
+  }
+
+  [data-tema="escuro"] {
+    --roxo: #c9a8ff;
+    --roxo-pastel: #2f2640;
+    --texto: #f9f9f9;
+    --fundo: #2f2640;
+  }
+
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: var(--fundo);
+    color: var(--texto);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  .container {
+    background-color: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 800px;
+    transition: background 0.4s;
+    background: var(--roxo-pastel);
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--roxo);
+    margin-bottom: 20px;
+  }
+
+  .tema-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+  }
+
+  .tema-toggle button {
+    background: var(--roxo);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .card {
+    border: 1px solid var(--roxo-claro);
+    border-radius: 12px;
+    padding: 20px;
+    background: white;
+    margin-bottom: 20px;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  label {
+    font-weight: 600;
+    color: var(--roxo);
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+
+  .botoes {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .btn-calcular {
+    background: var(--roxo);
+    color: white;
+  }
+
+  .btn-limpar {
+    background: #eee;
+  }
+
+#resultado {
+  display: none;
+  animation: aparecer 0.5s ease;
+  text-align: left;     /* Alinha o texto dentro do resultado à esquerda */
+  margin-left: 0;       /* Garante que fique encostado à esquerda */
+}
+
+  @keyframes aparecer {
+    from {opacity: 0; transform: translateY(-10px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  table {
+    width: 80%;
+    margin: 0 auto; /* ✅ Centraliza a tabela */
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  th, td {
+    text-align: right;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    color: var(--roxo);
+    text-align: right;
+  }
+
+  td:first-child, th:first-child {
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .total {
+    font-weight: bold;
+    color: var(--roxo);
+    text-align: center; /* ✅ Centraliza o texto do total */
+    margin-top: 15px;
+    font-size: 1.1rem;
+  }
+
+  /* --- Ajustes para modo escuro --- */
+  [data-tema="escuro"] .card {
+    background-color: #3c3350;
+    border: 1px solid #555;
+  }
+
+  [data-tema="escuro"] table {
+    background-color: #3c3350;
+    color: #f9f9f9;
+  }
+
+  [data-tema="escuro"] th,
+  [data-tema="escuro"] td {
+    border-bottom: 1px solid #666;
+    color: #f9f9f9;
+  }
+
+  [data-tema="escuro"] .total {
+    color: #c9a8ff;
+  }
+</style>
+</head>
+<body data-tema="claro">
+  <div class="container">
+    <div class="tema-toggle">
+      <button id="toggleTema">🌙 Modo Escuro</button>
+    </div>
+
+    <h1>Calculadora de INSS — 2025</h1>
+
+    <div id="entrada" class="card">
+      <label for="salario">Base INSS (R$)</label>
+      <input type="number" id="salario" placeholder="Ex: 3500" step="0.01">
+
+      <label for="teto">Teto INSS (R$)</label>
+      <input type="number" id="teto" value="8157.41" step="0.01" readonly>
+
+      <div class="botoes">
+        <button class="btn-calcular" onclick="calcular()">Calcular</button>
+        <button class="btn-limpar" onclick="limpar()">Limpar</button>
+      </div>
+    </div>
+
+    <div id="resultado" class="card">
+      <h2 style="color:var(--roxo);">Resultado</h2>
+      <table id="tabelaResultado">
+        <thead>
+          <tr>
+            <th>Faixa</th>
+            <th>Base (R$)</th>
+            <th>Alíquota</th>
+            <th>Desconto (R$)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="total" id="totalInss"></p>
+    </div>
+  </div>
+
+  <script>
+    const corpo = document.body;
+    const botaoTema = document.getElementById('toggleTema');
+    const resultado = document.getElementById('resultado');
+
+    botaoTema.addEventListener('click', () => {
+      const temaAtual = corpo.getAttribute('data-tema');
+      if (temaAtual === 'claro') {
+        corpo.setAttribute('data-tema', 'escuro');
+        botaoTema.textContent = '☀️ Modo Claro';
+      } else {
+        corpo.setAttribute('data-tema', 'claro');
+        botaoTema.textContent = '🌙 Modo Escuro';
+      }
+    });
+
+    function calcular() {
+      const salario = parseFloat(document.getElementById('salario').value);
+      const teto = parseFloat(document.getElementById('teto').value);
+
+      if (!salario || salario <= 0) {
+        alert("Informe um salário válido!");
+        return;
+      }
+
+      const faixas = [
+        { limite: 1518.00, aliquota: 0.075 },
+        { limite: 2793.88, aliquota: 0.09 },
+        { limite: 4190.83, aliquota: 0.12 },
+        { limite: teto, aliquota: 0.14 }
+      ];
+
+      let restante = salario;
+      let anterior = 0;
+      let totalDesconto = 0;
+      let linhas = "";
+
+      for (const f of faixas) {
+        const base = Math.max(0, Math.min(restante, f.limite - anterior));
+        const desconto = base * f.aliquota;
+        if (base > 0) {
+          linhas += `
+            <tr>
+              <td>R$ ${anterior.toFixed(2)} — R$ ${f.limite.toFixed(2)}</td>
+              <td>${base.toFixed(2)}</td>
+              <td>${(f.aliquota * 100).toFixed(1)}%</td>
+              <td>${desconto.toFixed(2)}</td>
+            </tr>`;
+        }
+        totalDesconto += desconto;
+        restante -= base;
+        anterior = f.limite;
+        if (restante <= 0) break;
+      }
+
+      document.querySelector("#tabelaResultado tbody").innerHTML = linhas;
+      document.getElementById("totalInss").textContent = `Total de INSS: R$ ${totalDesconto.toFixed(2)}`;
+
+      resultado.style.display = 'block';
+    }
+
+    function limpar() {
+      document.getElementById('salario').value = '';
+      resultado.style.display = 'none';
+    }
+  </script>
+</body>
+</html>
